@@ -145,3 +145,15 @@ __pycache__/
 
 **/wandb/
 **/events.out.tfevents.*
+
+# 忽略所有训练输出文件夹
+**/outputs/
+
+# 专门针对 wandb 和 tensorboard
+wandb/
+events.out.tfevents.*
+
+# 忽略模型权重文件
+*.zip
+*.pth
+*.pkl
