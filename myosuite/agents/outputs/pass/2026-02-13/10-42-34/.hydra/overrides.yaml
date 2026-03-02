@@ -1,4 +1,0 @@
-- env=myoLegWalkT2A-v0
-- alg_hyper_params.device=cpu
-- total_timesteps=50000000
-- seed=1
