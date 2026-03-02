@@ -1,0 +1,32 @@
+default:
+- override hydra/output: local
+- override hydra/launcher: local
+env: myoLegWalkT2A-v0
+algorithm: PPO
+seed: 123
+n_env: 32
+n_eval_env: 5
+policy: MlpPolicy
+learning_rate: 0.0001
+batch_size: 2048
+gamma: 0.995
+n_steps: 2048
+ent_coef: 0.005
+clip_range: 0.2
+gae_lambda: 0.95
+total_timesteps: 50000000
+log_interval: 1000
+eval_freq: 1000000
+restore_checkpoint_freq: 1000000
+save_freq: 2000000
+policy_kwargs:
+  net_arch:
+    pi:
+    - 512
+    - 512
+    vf:
+    - 512
+    - 512
+alg_hyper_params:
+  device: cpu
+job_name: ppo_sb3_${env}_evo

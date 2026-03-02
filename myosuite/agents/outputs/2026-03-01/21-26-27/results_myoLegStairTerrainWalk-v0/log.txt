@@ -1,0 +1,1 @@
+Logging to results_myoLegStairTerrainWalk-v0
