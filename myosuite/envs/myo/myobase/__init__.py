@@ -857,6 +857,213 @@ register_env_with_variants(
 
 
 register_env_with_variants(
+    id="myoLegWalkT2Apca-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegRoughTerrainT2Apca-v0",
+    # 指向我们第一步创建的文件和类
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:TerrainEnvT2A", 
+    max_episode_steps=1000,
+    kwargs={
+        # 复用原有的 myolegs.xml 模型路径
+        "model_path": curr_dir + "/../../../simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "min_height": 0.8,
+        "max_rot": 0.8,
+        "hip_period": 100,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None,
+        "terrain": "rough", # 关键：指定地形为 rough
+        "variant": None,
+    },
+)
+
+register_env_with_variants(
+    id="myoLegStairTerrainT2Apca-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:TerrainEnvT2A",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": curr_dir + "/../../../simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "min_height": 0.8,
+        "max_rot": 0.8,
+        "hip_period": 100,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None,
+        "terrain": "stairs", # 关键：指定地形为 stairs
+        "variant": "fixed",
+    },
+)
+
+register_env_with_variants(
+    id="myoLegHillyTerrainWalkT2Apca-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:TerrainEnvT2A",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": curr_dir + leg_model,
+        "normalize_act": True,
+        "min_height": 0.8,  # minimum center of mass height before reset
+        "max_rot": 0.8,  # maximum rotation before reset
+        "hip_period": 100,  # desired periodic hip angle movement
+        "reset_type": "init",  # none, init, random
+        "target_x_vel": 0.0,  # desired x velocity in m/s
+        "target_y_vel": 1.2,  # desired y velocity in m/s
+        "target_rot": None,  # if None then the initial root pos will be taken, otherwise provide quat
+        "terrain": "hilly",
+        "variant": "fixed",
+    },
+)
+
+register_env_with_variants(
+    id="myoLegWalkT2ApcaK3-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pcaK3:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegWalkT2ApcaK5-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pcaK5:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegWalkT2ApcaK7-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pcaK7:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegWalkT2ApcaK9-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pcaK9:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+
+register_env_with_variants(
+    id="myoLegWalkT2Apca0-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca_asym:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegRoughTerrainT2Apca0-v0",
+    # 指向我们第一步创建的文件和类
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca_asym:TerrainEnvT2A", 
+    max_episode_steps=1000,
+    kwargs={
+        # 复用原有的 myolegs.xml 模型路径
+        "model_path": curr_dir + "/../../../simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "min_height": 0.8,
+        "max_rot": 0.8,
+        "hip_period": 100,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None,
+        "terrain": "rough", # 关键：指定地形为 rough
+        "variant": None,
+    },
+)
+register_env_with_variants(
+    id="myoLegWalkT2AStrength-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:WalkEnvT2AStrength", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegWalkT2AVelocity-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:WalkEnvT2AVelocity", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegWalkT2AStiffness-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:WalkEnvT2AStiffness", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+
+register_env_with_variants(
     id="myoLegWalkT2Abi-v0",  # 新的环境ID
     entry_point="myosuite.envs.myo.myobase.walk_t2a_bi:WalkEnvT2A", # 指向新定义的类
     max_episode_steps=1000,
@@ -891,9 +1098,10 @@ register_env_with_variants(
     },
 )
 
+
 register_env_with_variants(
-    id="myoLegWalkT2Apca-v0",  # 新的环境ID
-    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:WalkEnvT2A", # 指向新定义的类
+    id="myoLegWalkT2A1-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a1:WalkEnvT2A", # 指向新定义的类
     max_episode_steps=1000,
     kwargs={
         "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
@@ -906,9 +1114,23 @@ register_env_with_variants(
     }
 )
 register_env_with_variants(
-    id="myoLegRoughTerrainT2Apca-v0",
+    id="myoLegWalkT2Apca1-v0",  # 新的环境ID
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:WalkEnvT2A", # 指向新定义的类
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None
+        # 注意：这里没有 terrain 参数，因为它是 WalkEnvV0
+    }
+)
+register_env_with_variants(
+    id="myoLegRoughTerrainT2Apca1-v0",
     # 指向我们第一步创建的文件和类
-    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca:TerrainEnvT2A", 
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:TerrainEnvT2A", 
     max_episode_steps=1000,
     kwargs={
         # 复用原有的 myolegs.xml 模型路径
@@ -923,5 +1145,57 @@ register_env_with_variants(
         "target_rot": None,
         "terrain": "rough", # 关键：指定地形为 rough
         "variant": None,
+    },
+)
+register_env_with_variants(
+    id="myoLegStairTerrainT2Apca1-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:TerrainEnvT2A",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": curr_dir + "/../../../simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "min_height": 0.8,
+        "max_rot": 0.8,
+        "hip_period": 100,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None,
+        "terrain": "stairs", # 关键：指定地形为 stairs
+        "variant": "fixed",
+    },
+)
+register_env_with_variants(
+    id="myoLegHillyTerrainWalkT2Apca1-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:TerrainEnvT2A",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": curr_dir + leg_model,
+        "normalize_act": True,
+        "min_height": 0.8,  # minimum center of mass height before reset
+        "max_rot": 0.8,  # maximum rotation before reset
+        "hip_period": 100,  # desired periodic hip angle movement
+        "reset_type": "init",  # none, init, random
+        "target_x_vel": 0.0,  # desired x velocity in m/s
+        "target_y_vel": 1.2,  # desired y velocity in m/s
+        "target_rot": None,  # if None then the initial root pos will be taken, otherwise provide quat
+        "terrain": "hilly",
+        "variant": "fixed",
+    },
+)
+register_env_with_variants(
+    id="myoLegWalk1-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_v1:WalkEnvV0",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": curr_dir + leg_model,
+        "normalize_act": True,
+        "min_height": 0.8,  # minimum center of mass height before reset
+        "max_rot": 0.8,  # maximum rotation before reset
+        "hip_period": 100,  # desired periodic hip angle movement
+        "reset_type": "init",  # none, init, random
+        "target_x_vel": 0.0,  # desired x velocity in m/s
+        "target_y_vel": 1.2,  # desired y velocity in m/s
+        "target_rot": None,  # if None then the initial root pos will be taken, otherwise provide quat
     },
 )

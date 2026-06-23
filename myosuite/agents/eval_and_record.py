@@ -1,128 +1,6 @@
-# import os
-# import argparse
-# import numpy as np
-# import torch
-
-# import gym
-# import myosuite
-
-# import imageio
-
-# from stable_baselines3 import PPO, SAC
-# from stable_baselines3.common.vec_env import VecNormalize, DummyVecEnv
-# from stable_baselines3.common.env_util import make_vec_env
-
-# # 尝试导入 T2A
-# try:
-#     import myosuite.envs.myo.myobase.walk_t2a
-#     print("SUCCESS: T2A Environment module imported.")
-# except ImportError:
-#     print("WARNING: Could not import walk_t2a (Ignore this if using standard env).")
-# except Exception as e:
-#     print(f"ERROR: T2A import failed with error: {e}")
-
-# def evaluate(args):
-    
-#     # 1. 创建环境
-#     env = make_vec_env(args.env, n_envs=1)
-    
-#     # 2. 处理 VecNormalize
-#     stats_path = os.path.join(args.model_dir, f"{args.env}_{args.algo}_env")
-    
-#     # SB3 有时会保存为 .pkl，有时没有后缀，我们都试一下
-#     if not os.path.exists(stats_path) and os.path.exists(stats_path + ".pkl"):
-#         stats_path += ".pkl"
-
-#     if os.path.exists(stats_path):
-#         env = VecNormalize.load(stats_path, env)
-#         env.training = False
-#         env.norm_reward = False
-#     else:
-#         print(f"WARNING: No VecNormalize stats found at {stats_path}. Running without normalization.")
-
-#     # 3. 加载模型
-#     model_path = os.path.join(args.model_dir, f"{args.env}_{args.algo}_model.zip")
-    
-#     if not os.path.exists(model_path):
-#         print(f"CRITICAL ERROR: Model file not found at {model_path}")
-#         return
-
-#     if args.algo == "PPO":
-#         model = PPO.load(model_path, env=env, device=args.device)
-#     elif args.algo == "SAC":
-#         model = SAC.load(model_path, env=env, device=args.device)
-#     print("DEBUG: Model loaded successfully.")
-
-#     # 4. 推理
-#     print("DEBUG: Resetting environment...")
-#     obs = env.reset()
-#     frames = []
-#     total_reward = 0
-    
-#     print(f"DEBUG: Starting loop for {args.steps} steps...")
-    
-#     try:
-#         for i in range(args.steps):
-#             action, _ = model.predict(obs, deterministic=True)
-#             obs, reward, done, info = env.step(action)
-#             total_reward += reward[0]
-
-#             # 渲染
-#             # print(f"DEBUG: Rendering frame {i}...") # 这行太吵，只在第一帧打印
-#             if i == 0: print("DEBUG: First step taken. Attempting render...")
-            
-#             raw_env = env.envs[0].unwrapped
-#             frame = raw_env.sim.renderer.render_offscreen(
-#                 width=args.width,
-#                 height=args.height,
-#                 camera_id=args.camera_id
-#             )
-#             frames.append(frame)
-
-#             if done[0]:
-#                 print(f"Episode finished at step {i+1}. Total Reward: {total_reward}")
-#                 obs = env.reset()
-#                 total_reward = 0
-#                 if not args.loop:
-#                     break
-#         print(f"DEBUG: Loop finished. Captured {len(frames)} frames.")
-                    
-#     except KeyboardInterrupt:
-#         print("Interrupted by user.")
-#     except Exception as e:
-#         print(f"CRITICAL ERROR during loop: {e}")
-    
-#     env.close()
-
-#     # 5. 保存
-#     if frames:
-#         output_path = os.path.join(args.model_dir, f"eval_{args.env}.mp4")
-#         print(f"DEBUG: Saving video to {output_path}...")
-#         imageio.mimsave(output_path, frames, fps=30)
-#         print("DONE: Video saved successfully!")
-#     else:
-#         print("ERROR: No frames captured.")
-
-# if __name__ == "__main__":
-#     print("DEBUG: Entering Main Block")
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--env", type=str, required=True)
-#     parser.add_argument("--algo", type=str, default="PPO")
-#     parser.add_argument("--model_dir", type=str, default=".")
-#     parser.add_argument("--steps", type=int, default=1000)
-#     parser.add_argument("--camera_id", type=int, default=-1)
-#     parser.add_argument("--width", type=int, default=640)
-#     parser.add_argument("--height", type=int, default=480)
-#     parser.add_argument("--device", type=str, default="cpu")
-#     parser.add_argument("--loop", action="store_true")
-    
-#     args = parser.parse_args()
-#     print(f"DEBUG: Arguments parsed. Env: {args.env}, Model Dir: {args.model_dir}")
-#     evaluate(args)
-
-# export MUJOCO_GL=egl
-# python eval_and_record.py --env myoLegRoughTerrainT2A1-v0  --model_dir /home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/agents/outputs/2026-02-10/21-46-20 --algo PPO --steps 1000 --loop --plot_evolution
 import os
+os.environ['MUJOCO_GL'] = 'egl'
+os.environ['PYOPENGL_PLATFORM'] = 'egl'
 import argparse
 import numpy as np
 import torch
@@ -135,205 +13,153 @@ from stable_baselines3 import PPO, SAC
 from stable_baselines3.common.vec_env import VecNormalize, DummyVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 
-# 尝试导入 T2A 相关模块
-try:
-    import myosuite.envs.myo.myobase.walk_t2a1
-    import myosuite.envs.myo.myobase.obj_hold_t2a
-    print("SUCCESS: T2A Environment modules imported.")
-except ImportError:
-    print("WARNING: Could not import T2A modules.")
-except Exception as e:
-    print(f"ERROR: T2A import failed: {e}")
 
-# ==============================================================================
-#  Bio-Radar Visualization Function (Local Implementation)
-# ==============================================================================
+# 尝试导入 T2A 相关模块
+# try:
+#     import myosuite.envs.myo.myobase.walk_t2a1
+#     import myosuite.envs.myo.myobase.obj_hold_t2a
+#     print("SUCCESS: T2A Environment modules imported.")
+# except ImportError:
+#     print("WARNING: Could not import T2A modules.")
+# except Exception as e:
+#     print(f"ERROR: T2A import failed: {e}")
+
 def generate_bio_radar_plot(env, save_path, title_text="T2A Evolution"):
     """
-    Reads T2A data from the environment and generates a Bright Bio-Radar Chart.
+    针对博士论文优化的雷达图函数（修复多余维度显示问题）：
+    1. 自动过滤未进化的维度（消除 1.0x 基准圆圈）。
+    2. 兼容 (N,) 和 (N, 3) 维度数据。
+    3. 强化 1.5x 刻度线为加粗实线。
     """
-    print("DEBUG: Generating Bright Bio-Radar Visualization...")
+    print(f"DEBUG: Generating Adaptive Bio-Radar for {title_text}...")
     
-    # 1. 获取环境数据
     if not hasattr(env, 'muscle_names') or not hasattr(env, 'current_scales'):
-        print("WARNING: Environment does not have T2A attributes (muscle_names/current_scales). Skipping plot.")
+        print("WARNING: Environment missing required attributes for plotting.")
         return
 
     muscle_names = env.muscle_names
-    current_scales = env.current_scales # Shape (N, 3) -> [F0, L_opt, Stiffness]
+    # 原始数据形状可能是 (N,) 或 (N, 3)
+    raw_data = np.array(env.current_scales)
+    
+    # === 核心修复 1: 维度标准化与过滤 ===
+    if raw_data.ndim == 1:
+        data_to_plot = raw_data.reshape(-1, 1)
+    else:
+        data_to_plot = raw_data
+        
+    num_metrics = data_to_plot.shape[1]
+    
+    # 识别哪些维度发生了进化（不全等于 1.0 的列）
+    active_indices = []
+    for i in range(num_metrics):
+        # 如果这一列的数据不全是 1.0，说明该参数被 T2A 策略修改过
+        if not np.allclose(data_to_plot[:, i], 1.0, atol=1e-3):
+            active_indices.append(i)
+    
+    # 如果是 Stiffness 环境但数据全是 1.0 (例如刚开始跑)，至少保留一列避免报错
+    if len(active_indices) == 0:
+        active_indices = [0] 
 
-    # 2. 定义解剖学分组 (用于排序和背景色块)
-    # 根据 MyoHand 的常用肌肉名定义
-    # muscle_groups_def = {
-    #     "Wrist": ["ECRL", "ECRB", "ECU", "FCR", "FCU", "PL", "PT", "PQ"],
-    #     "Thumb": ["EPL", "EPB", "FPL", "APL", "OP"],
-    #     "Flexors": ["FDS", "FDP"], # 包含 FDS2-5, FDP2-5
-    #     "Extensors": ["EDC", "EDM", "EIP"], # 包含 EDC2-5
-    #     "Intrinsics": ["RI", "LU", "UI", "DI", "PI"] # 手内肌
-    # }
+    # --- 数据分组逻辑 ---
     muscle_groups_def = {
         "Hip (髋部)": ["hip", "gluteus", "psoas"],
         "Knee (膝部)": ["quad", "hamstring", "rectus_fem"],
         "Ankle (踝部)": ["gastroc", "soleus", "tibialis"],
     }
-
-    # 3. 数据重组与排序
-    ordered_names = []
-    ordered_data = []
-    group_spans = [] 
     
-    current_idx = 0
-    used_indices = set()
+    ordered_names, ordered_values, group_spans = [], [], []
+    current_idx, used_indices = 0, set()
 
-    # 遍历定义的组，从 env 数据中通过名字匹配找数据
     for group_name, patterns in muscle_groups_def.items():
         start = current_idx
-        found_in_group = False
-        
-        # 查找属于该组的所有肌肉
-        # 注意：这里我们遍历环境里的所有肌肉，看它是否匹配当前组的 pattern
-        # 这种两层循环是为了保持组的顺序，同时找到所有匹配项
-        temp_group_items = []
-        
+        found = False
         for i, m_name in enumerate(muscle_names):
             if i in used_indices: continue
-            
-            # 检查匹配
-            for pat in patterns:
-                if pat in m_name: # Substring match
-                    temp_group_items.append((m_name, current_scales[i]))
-                    used_indices.add(i)
-                    found_in_group = True
-                    break
-        
-        # 将找到的肌肉加入有序列表
-        for name, data in temp_group_items:
-            ordered_names.append(name)
-            ordered_data.append(data)
-            current_idx += 1
-            
-        if found_in_group:
-            group_spans.append((start, current_idx, group_name))
+            if any(pat in m_name.lower() for pat in patterns):
+                ordered_names.append(m_name)
+                ordered_values.append(data_to_plot[i])
+                used_indices.add(i); found = True; current_idx += 1
+        if found: group_spans.append((start, current_idx, group_name))
 
-    # 处理未分类的肌肉 (如果有的话)
-    start = current_idx
-    leftover = False
     for i, m_name in enumerate(muscle_names):
         if i not in used_indices:
-            ordered_names.append(m_name)
-            ordered_data.append(current_scales[i])
-            current_idx += 1
-            leftover = True
-    if leftover:
-        group_spans.append((start, current_idx, "Others"))
+            ordered_names.append(m_name); ordered_values.append(data_to_plot[i]); current_idx += 1
+    if current_idx > start: group_spans.append((start, current_idx, "Others"))
 
-    if not ordered_data:
-        print("WARNING: No matching muscles found for visualization.")
-        return
-
-    data = np.array(ordered_data) # Shape (N, 3)
+    # --- 绘图配置 ---
+    final_data = np.array(ordered_values)
     N = len(ordered_names)
+    log_data = np.log2(final_data + 1e-6) 
+    angles = np.linspace(0, 2 * np.pi, N, endpoint=False) + np.pi / 2
+    
+    # 视觉参数
+    BASE_R = 12.0       
+    SCALE_FACTOR = 7.0  
+    Y_MIN, Y_MAX = 2.0, 22.0
+    
+    # 论文级字号调优
+    FONT_TITLE = 52
+    FONT_GROUP = 40
+    FONT_LEGEND = 42    # <--- 这里稍微调小了一点点
+    FONT_REF = 28       
 
-    # === Log2 转换 ===
-    # 将 Scale 转换为对称的 Log Space
-    # 1.0 -> 0; 2.0 -> 1; 0.5 -> -1
-    # 这样在雷达图上，增强和减弱的视觉距离是相等的
-    log_data = np.log2(data + 1e-6) 
-
-    # 4. 绘图设置
-    try:
-        plt.style.use('seaborn-v0_8-whitegrid')
-    except:
-        plt.style.use('default') # Fallback
-
-    angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
-    angles += np.pi / 2 
-    width = (2 * np.pi / N) * 0.8 
-
-    fig = plt.figure(figsize=(14, 14), facecolor='white')
+    fig = plt.figure(figsize=(22, 22), facecolor='white')
     ax = fig.add_subplot(111, projection='polar')
     ax.set_facecolor('white')
+    ax.set_ylim(Y_MIN, Y_MAX)
     ax.grid(False)
 
-    # 配色: F0(红), Length(绿), Stiffness(蓝)
-    colors = ['#D70040', '#009E73', '#0072B2'] 
-    labels = ['Force ($F_0$)', 'Length ($L_{opt}$)', 'Stiffness']
-    
-    BASE_R = 6.0 # 基准半径
-
-    # 绘制背景扇区
-    bg_colors = ['#F8F8F8', '#FFFFFF']
+    # 1. 绘制背景扇区
     for idx, (start, end, name) in enumerate(group_spans):
-        start_angle = angles[start] - width/1.5
-        end_angle = angles[end-1] + width/1.5
-        if start_angle < 0: start_angle += 2*np.pi
-        
-        # 背景色块
-        color = bg_colors[idx % 2]
-        ax.bar(x=(start_angle + end_angle)/2, height=15, width=(end_angle - start_angle), 
-               bottom=0, color=color, edgecolor='none', zorder=0)
-        
-        # 组名标签
         mid_angle = (angles[start] + angles[end-1]) / 2
-        ax.text(mid_angle, 14.2, name, color='#333333', ha='center', va='center', fontsize=14, fontweight='bold')
-        
-        # 分隔线
-        if idx < len(group_spans) - 1:
-            sep_angle = angles[end-1] + (angles[(end)%N] - angles[end-1])/2
-            ax.plot([sep_angle, sep_angle], [1.5, 13.5], color='#DDDDDD', linestyle='-', linewidth=1.5, zorder=1)
+        ax.text(mid_angle, Y_MAX + 1.5, name, ha='center', va='center', 
+                fontsize=FONT_GROUP, fontweight='bold', color='#222222')
+        color = '#F5F5F5' if idx % 2 == 0 else '#FFFFFF'
+        ax.bar(x=mid_angle, height=Y_MAX-Y_MIN, width=(angles[end-1]-angles[start]+0.1), 
+               bottom=Y_MIN, color=color, edgecolor='none', zorder=0)
 
-    # 绘制基准线
-    ax.plot(np.linspace(0, 2*np.pi, 100), [BASE_R]*100, color='#555555', linestyle='--', linewidth=1.5, alpha=0.7, zorder=2)
-    ax.text(0, BASE_R + 0.5, "Original (1.0x)", color='#333333', ha='center', fontsize=10, fontweight='bold')
+    # 2. 绘制参考刻度 (1.5x 加粗实线)
+    scales = [(0.5, ':', 0.4, "0.5x", 2), (1.0, '--', 0.8, "1.0x (Base)", 3),
+              (1.5, '-', 1.0, "1.5x", 6), (2.0, ':', 0.4, "2.0x", 2)]
     
-    # 绘制参考环 (2.0x 和 0.5x)
-    # log2(2.0) = 1.0 -> R = Base + 2.5
-    # log2(0.5) = -1.0 -> R = Base - 2.5
-    ax.plot(np.linspace(0, 2*np.pi, 100), [BASE_R + 2.5]*100, color='#999999', linestyle=':', linewidth=1, alpha=0.5, zorder=2)
-    ax.text(np.pi/2, BASE_R + 2.8, "2.0x", color='#777777', fontsize=9, ha='center')
-    ax.plot(np.linspace(0, 2*np.pi, 100), [BASE_R - 2.5]*100, color='#999999', linestyle=':', linewidth=1, alpha=0.5, zorder=2)
-    ax.text(np.pi/2, BASE_R - 3.2, "0.5x", color='#777777', fontsize=9, ha='center')
+    for val, style, alpha, label, lw in scales:
+        r = BASE_R + np.log2(val) * SCALE_FACTOR
+        ax.plot(np.linspace(0, 2*np.pi, 100), [r]*100, color='#444444', 
+                linestyle=style, linewidth=lw, alpha=alpha, zorder=2)
+        ax.text(np.pi/2, r + 0.6, label, color='#333333', ha='center', 
+                fontsize=FONT_REF, fontweight='bold', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
-    # 5. 绘制数据点
-    for i in range(3):
-        # 映射半径: R = Base + log_val * scale_factor
-        radii = BASE_R + log_data[:, i] * 2.5 
+    # 3. 绘制进化数据 (仅绘制活跃维度)
+    all_colors = ['#E31A1C', '#33A02C', '#1F78B4'] # 对应 Force, Velocity, Stiffness
+    all_labels = ['Force ($F_0$)', 'Velocity ($V_{max}$)', 'Stiffness ($K$)']
+    
+    for i in active_indices:
+        current_col_log = log_data[:, i]
+        radii = BASE_R + current_col_log * SCALE_FACTOR
+        current_radii = np.clip(radii, Y_MIN, Y_MAX)
         
+        color = all_colors[i % 3]
+        label = all_labels[i % 3]
+        
+        # 连线
         for j in range(N):
-            # 连线
-            ax.plot([angles[j], angles[j]], [BASE_R, radii[j]], color=colors[i], linewidth=1.5, alpha=0.3, zorder=3)
-        
+            ax.plot([angles[j], angles[j]], [BASE_R, current_radii[j]], 
+                    color=color, linewidth=2.5, alpha=0.2, zorder=3)
         # 散点
-        ax.scatter(angles, radii, c=colors[i], s=70, alpha=0.9, edgecolors='white', linewidth=0.5, label=labels[i], zorder=4)
+        ax.scatter(angles, current_radii, c=color, s=600, alpha=0.8, 
+                   edgecolors='white', linewidth=2.0, label=label, zorder=4)
 
-    # 6. 标签与美化
-    ax.set_ylim(0, 15)
-    ax.set_yticklabels([])
-    ax.set_xticklabels([])
+    # 4. 图例美化
+    ax.set_yticklabels([]); ax.set_xticklabels([])
+    leg = ax.legend(loc='lower right', bbox_to_anchor=(1.15, 0.05), 
+                    ncol=1, frameon=True, fontsize=FONT_LEGEND, 
+                    markerscale=1.4, facecolor='white', edgecolor='#CCCCCC')
+    for text in leg.get_texts(): text.set_fontweight('bold')
 
-    for j in range(N):
-        angle = angles[j]
-        name = ordered_names[j]
-        # 文字旋转逻辑
-        rotation = angle * 180 / np.pi - 90
-        if 90 < abs(rotation) < 270: rotation += 180
-        
-        ax.text(angle, 1.2, name, color='#555555', fontsize=8, ha='center', va='center', rotation=rotation)
-
-    # 2. 将图例位置稍微调低一点，避免撞到新标题
-    plt.legend(loc='lower right', bbox_to_anchor=(1.15, 0.0), frameon=False, labelcolor='black', fontsize=12)
-    
-    # 3. [核心修改] 使用传入的 title_text (环境名) 作为大标题
-    plt.title(title_text, color='black', fontsize=20, pad=40, fontweight='bold')
-    
-    # 4. 把原来的标题作为副标题放在下面
-    # plt.figtext(0.5, 0.93, "Morphological Evolution Spectrum", color='#555555', ha='center', fontsize=12)
-    # 保存
-    save_path = os.path.abspath(save_path)
+    plt.title(title_text, fontsize=FONT_TITLE, pad=120, fontweight='bold')
     plt.savefig(save_path, dpi=300, facecolor='white', bbox_inches='tight')
-    print(f"SUCCESS: Bio-Radar Plot saved to: {save_path}")
-    plt.close()
-
+    plt.close(fig) 
+    print(f"SUCCESS: Plot updated and saved to {save_path}")
 
 # ==============================================================================
 #  Main Evaluation Logic
@@ -398,6 +224,9 @@ def evaluate(args):
 
     # 推理循环
     print("DEBUG: Resetting environment...")
+    import random
+    first_seed = random.randint(0, 10000)
+    env.seed(first_seed)  # 给环境打上随机种子
     obs = env.reset()
     
     frames = []
@@ -408,21 +237,53 @@ def evaluate(args):
 
     try:
         print(f"DEBUG: Starting loop for {args.steps} steps...")
+        radar_plotted = False # 添加一个旗标，确保只画一次
         
         for i in range(args.steps):
-            action, _ = model.predict(obs, deterministic=True)
+            action, _ = model.predict(obs, deterministic=False)
             obs, reward, done, info = env.step(action)
             total_reward += reward[0]
 
             # === 调用本地的 Radar 绘图函数 ===
             # 只有当用户指定 --plot_evolution 且在第2步(进化刚完成)时才画图
-            if args.plot_evolution and i == 1:
-                try:
-                    generate_bio_radar_plot(raw_env, radar_path, args.env)
-                except Exception as e:
-                    print(f"WARNING: Plotting failed: {e}")
-                    import traceback
-                    traceback.print_exc()
+            # if args.plot_evolution and i == 1:
+            #     try:
+            #         generate_bio_radar_plot(raw_env, radar_path, args.env)
+            #     except Exception as e:
+            #         print(f"WARNING: Plotting failed: {e}")
+            #         import traceback
+            #         traceback.print_exc()
+            # === 兼容 PCA 与普通 T2A 的 Radar 绘图逻辑 ===
+            if args.plot_evolution and not radar_plotted:
+                target_env = raw_env
+                # 递归查找真正的环境类
+                while hasattr(target_env, 'env') and not hasattr(target_env, 'current_scales'):
+                    target_env = target_env.env
+                
+                # 检查是否拿到了关键数据
+                if hasattr(target_env, 'current_scales'):
+                    # 【核心修复】：如果环境是 PCA 版，它可能没有 muscle_names，只有 muscle_indices
+                    if not hasattr(target_env, 'muscle_names'):
+                        print("DEBUG: PCA environment detected. Reconstructing muscle_names...")
+                        # 从 MuJoCo 模型中实时提取肌肉名称
+                        m_names = []
+                        for idx in target_env.muscle_indices:
+                            try:
+                                name = target_env.sim.model.actuator_id2name(int(idx))
+                            except:
+                                name = f"M{idx}"
+                            m_names.append(name)
+                        target_env.muscle_names = m_names # 补齐属性
+
+                    try:
+                        generate_bio_radar_plot(target_env, radar_path, args.env)
+                        radar_plotted = True
+                    except Exception as e:
+                        print(f"WARNING: Plotting failed: {e}")
+                        radar_plotted = True
+                elif i > 15:
+                    print("WARNING: Could not find current_scales in environment.")
+                    args.plot_evolution = False
 
             # 渲染图像
             if i % 2 == 0: 
@@ -439,7 +300,11 @@ def evaluate(args):
 
             if done[0]:
                 print(f"Episode finished at step {i+1}. Total Reward: {total_reward:.4f}")
-                obs = env.reset()
+                
+                # 生成新的随机种子并应用
+                # new_seed = random.randint(0, 10000)
+                # env.seed(new_seed)
+                # obs = env.reset()
                 total_reward = 0
                 if not args.loop:
                     break
@@ -454,27 +319,36 @@ def evaluate(args):
         print(f"CRITICAL ERROR: {e}")
     
     env.close()
+    # 如果使用了 raw_env.sim.renderer，手动关闭它
+    if hasattr(raw_env, 'sim') and hasattr(raw_env.sim, 'renderer'):
+        try:
+            raw_env.sim.renderer.close() 
+            print("DEBUG: Renderer closed safely.")
+        except:
+            pass
 
     if frames:
         print(f"DEBUG: Saving video to {video_path}...")
         try:
-            imageio.mimsave(video_path, frames, fps=30)
+            imageio.mimsave(video_path, frames, fps=30, 
+                        quality=9, 
+                        macro_block_size=1)
             print("DONE: Video saved successfully!")
         except Exception as e:
             print(f"ERROR saving video: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", type=str, required=True, help="Environment ID")
+    parser.add_argument("--env", type=str, default="myoLegHillyTerrainWalk-v0", help="Environment ID")
     parser.add_argument("--algo", type=str, default="PPO", help="Algorithm (PPO or SAC)")
-    parser.add_argument("--model_dir", type=str, default=".", help="Directory containing the .zip model")
-    parser.add_argument("--steps", type=int, default=1000, help="Number of steps to evaluate")
-    parser.add_argument("--camera_id", type=int, default=-1, help="Camera ID")
+    parser.add_argument("--model_dir", type=str, default="outputs/walk_ori/hilly/ori1", help="Directory containing the .zip model")
+    parser.add_argument("--steps", type=int, default=10000, help="Number of steps to evaluate")
+    parser.add_argument("--camera_id", type=int, default=0, help="Camera ID")
     parser.add_argument("--width", type=int, default=640, help="Render width")
     parser.add_argument("--height", type=int, default=480, help="Render height")
     parser.add_argument("--device", type=str, default="cpu", help="Device")
-    parser.add_argument("--loop", action="store_true", help="Loop evaluation")
-    parser.add_argument("--plot_evolution", action="store_true", help="Plot T2A Bio-Radar Chart")
+    parser.add_argument("--loop", default=True, action="store_true", help="Loop evaluation")
+    parser.add_argument("--plot_evolution", default=True, action="store_true", help="Plot T2A Bio-Radar Chart")
     
     args = parser.parse_args()
     evaluate(args)

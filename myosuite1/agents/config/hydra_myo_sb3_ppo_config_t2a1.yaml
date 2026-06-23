@@ -1,0 +1,48 @@
+default:
+    - override hydra/output: local
+    - override hydra/launcher: local
+
+# 你的 T2A 环境
+env               :   'myoLegWalkT2A-v0'
+algorithm         :   PPO
+seed              :   123
+n_env             :   32    # 并行环境数，32 是个不错的选择
+n_eval_env        :   5
+
+# PPO object
+policy            : 'MlpPolicy'
+learning_rate     : 1e-4    # [修改] 提高学习率 (标准 PPO)，加快前期搜索速度
+batch_size        : 2048    # [修改] 增大 Batch Size，让梯度更新更稳定
+gamma             : 0.995    # [修改] 提高折扣因子，让 Agent 关注长远平衡，而不是只看当前不死
+n_steps           : 2048     # [新增] 每个环境采样步数。Buffer大小 = n_env * n_steps = 32*256 = 8192
+ent_coef          : 0.005    # [新增] 关键！增加熵系数，强制 Agent 探索不同的身体参数组合，防止过早收敛
+clip_range        : 0.2     # PPO 标准裁剪范围
+gae_lambda        : 0.95    # GAE 因子
+
+# PPO.learn function
+total_timesteps   : 100000000 # [修改] 5000万步。进化任务非常耗时，15万步绝对不够
+log_interval      : 1000      # 打印频率高一点，方便观察
+
+eval_freq               : 1000000   # 每 100万步评估一次
+restore_checkpoint_freq : 50000   # 没必要存太频繁
+save_freq               : 50000   # 每 200万步存一次模型
+
+policy_kwargs:
+  # [修改] 增大网络容量
+  # T2A 任务输入维度增加了 (Control + Design)，且关系非线性更强
+  # 建议改为 [256, 256] 或者 [400, 300]
+  net_arch:
+    pi: [512, 512]
+    vf: [512, 512]
+  # 激活函数可以选择 Tanh (SB3默认) 或 ReLU
+  # activation_fn: Tanh
+
+
+# Algorithm hyperparameters
+alg_hyper_params  :   {'device': 'cpu'} # PPO 在 CPU 上跑采样通常更快，除非网络特别大
+
+job_name          :   ppo_sb3_${env}_evo
+
+hydra:
+    job:
+        name: ${env}
