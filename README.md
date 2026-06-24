@@ -3,7 +3,7 @@
 This repository contains the code used to study **Spectral Synergy Evolution (SDE)** for musculoskeletal morphology-control co-optimization in MyoSuite leg locomotion tasks.
 
 The public version is intentionally **code-only**:
-- included: environments, training code, analysis scripts, and documentation
+- included: environments, training code, and analysis scripts
 - excluded: checkpoints, logs, rollout exports, paper working files, generated synergy bases, and other runtime artifacts
 
 ## What This Repo Implements
@@ -34,7 +34,6 @@ myosuite/
   envs/myo/myobase/        SDE / T2A / terrain task definitions
   agents/                  training, evaluation, and preprocessing utilities
 scripts/                   experiment helpers and analysis pipelines
-docs/                      upstream MyoSuite documentation
 README.md                  public project overview
 ```
 
@@ -77,8 +76,9 @@ python myosuite/agents/hydra_sb3_launcher.py env=myoLegWalkT2Apca1-v0 seed=123
 ### 3. Run validation / analysis
 
 Example utilities in this repo include:
-- `biomech_validate_success.py`
 - `scripts/build_biomech_shortlist.py`
+- `scripts/build_paper_eval_manifest.py`
+- `scripts/run_paper_evaluation_batch.py`
 - `scripts/segment_gait_cycles.py`
 - `scripts/plot_biomech_composite_figure.py`
 

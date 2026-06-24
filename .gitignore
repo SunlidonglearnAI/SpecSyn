@@ -167,6 +167,8 @@ TASKS.md
 README copy.md
 biomech_validate_success.py
 myosuite_init.py
+MUJOCO_LOG.TXT
+.readthedocs.yaml
 
 # Training / evaluation artifacts
 myosuite/agents/outputs/
