@@ -1128,6 +1128,28 @@ register_env_with_variants(
     }
 )
 register_env_with_variants(
+    id="myoLegWalkT2Apca1RewardV2-v0",
+    entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:WalkEnvT2A",
+    max_episode_steps=1000,
+    kwargs={
+        "model_path": "/home/fzh/Workspace/T2A_symmetry/muscle/myosuite/myosuite/simhive/myo_sim/leg/myolegs.xml",
+        "normalize_act": True,
+        "reset_type": "init",
+        "target_x_vel": 0.0,
+        "target_y_vel": 1.2,
+        "target_rot": None,
+        "weighted_reward_keys": {
+            "vel_reward": 5.0,
+            "alive_bonus": 2.0,
+            "done": -100,
+            "cyclic_hip": -10,
+            "ref_rot": 10.0,
+            "joint_angle_rew": 5.0,
+            "act_mag": -0.1,
+        },
+    },
+)
+register_env_with_variants(
     id="myoLegRoughTerrainT2Apca1-v0",
     # 指向我们第一步创建的文件和类
     entry_point="myosuite.envs.myo.myobase.walk_t2a_pca1:TerrainEnvT2A", 

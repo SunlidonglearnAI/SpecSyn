@@ -157,3 +157,26 @@ events.out.tfevents.*
 *.zip
 *.pth
 *.pkl
+
+# Public-release exclusions
+paper/
+PROJECT_CONTEXT.md
+REVIEWER_COMMENTS.md
+TASKS.md
+
+# Training / evaluation artifacts
+myosuite/agents/outputs/
+myosuite/agents/outputs_by_category/
+myosuite/agents/outputs_cbs/
+myosuite/agents/runs/
+myosuite/agents/tensorboard/
+logs/
+results_*/
+eval_videos/
+
+# Generated synergy basis artifacts
+myosuite/envs/myo/myobase/synergy_W_basis*.npy
+myosuite/envs/myo/myobase/synergy_W_basispca.npy
+myosuite/envs/myo/myobase/synergy_basis_metadata.json
+myosuite/envs/myo/myobase/synergy_basis_preprocess.npz
+myosuite/agents/synergy_basis_metadata.json

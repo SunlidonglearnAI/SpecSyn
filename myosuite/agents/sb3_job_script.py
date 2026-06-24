@@ -18,24 +18,27 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecNormalize
 
-IS_WnB_enabled = False
+IS_WnB_available = False
 try:
     import wandb
     from wandb.integration.sb3 import WandbCallback
 
-    IS_WnB_enabled = True
+    IS_WnB_available = True
 except ImportError:
     pass
 
 
 def train_loop(job_data) -> None:
+    seed = int(job_data.seed) if "seed" in job_data else None
 
     config = {
         "policy_type": job_data.policy,
         "total_timesteps": job_data.total_timesteps,
         "env_name": job_data.env,
+        "seed": seed,
     }
-    if IS_WnB_enabled:
+    use_wandb = bool(job_data.get("use_wandb", False)) and IS_WnB_available
+    if use_wandb:
         run = wandb.init(
             project="sb3_hand",
             config=config,
@@ -46,16 +49,25 @@ def train_loop(job_data) -> None:
 
     log = configure(f"results_{job_data.env}")
     # Create the vectorized environment and normalize ob
-    env = make_vec_env(job_data.env, n_envs=job_data.n_env)
+    env = make_vec_env(job_data.env, n_envs=job_data.n_env, seed=seed)
     env = VecNormalize(env, norm_obs=True, norm_reward=False, clip_obs=10.0)
 
-    eval_env = make_vec_env(job_data.env, n_envs=job_data.n_eval_env)
+    eval_env = make_vec_env(
+        job_data.env,
+        n_envs=job_data.n_eval_env,
+        seed=None if seed is None else seed + 10000,
+    )
     eval_env = VecNormalize(eval_env, norm_obs=True, norm_reward=False, clip_obs=10.0)
 
     algo = job_data.algorithm
+    tensorboard_log = f"wandb/{run.id}" if use_wandb else "tensorboard"
     if algo == "PPO":
         # Load activation function from config
         policy_kwargs = OmegaConf.to_container(job_data.policy_kwargs, resolve=True)
+        ppo_kwargs = dict(job_data.alg_hyper_params)
+        for key in ("n_steps", "ent_coef", "clip_range", "gae_lambda"):
+            if key in job_data:
+                ppo_kwargs[key] = job_data[key]
 
         model = PPO(
             job_data.policy,
@@ -64,9 +76,10 @@ def train_loop(job_data) -> None:
             learning_rate=job_data.learning_rate,
             batch_size=job_data.batch_size,
             policy_kwargs=policy_kwargs,
-            tensorboard_log=f"wandb/{run.id}",
+            tensorboard_log=tensorboard_log,
             gamma=job_data.gamma,
-            **job_data.alg_hyper_params,
+            seed=seed,
+            **ppo_kwargs,
         )
     elif algo == "SAC":
         model = SAC(
@@ -77,8 +90,9 @@ def train_loop(job_data) -> None:
             learning_starts=job_data.learning_starts,
             batch_size=job_data.batch_size,
             tau=job_data.tau,
-            tensorboard_log=f"wandb/{run.id}",
+            tensorboard_log=tensorboard_log,
             gamma=job_data.gamma,
+            seed=seed,
             **job_data.alg_hyper_params,
         )
 
@@ -98,7 +112,7 @@ def train_loop(job_data) -> None:
     else:
         print("No checkpoint loaded, training starts.")
 
-    if IS_WnB_enabled:
+    if use_wandb:
         callback = [
             WandbCallback(
                 model_save_path=f"models/{run.id}",
@@ -127,5 +141,5 @@ def train_loop(job_data) -> None:
     model.save(f"{job_data.env}_" + algo + "_model")
     env.save(f"{job_data.env}_" + algo + "_env")
 
-    if IS_WnB_enabled:
+    if use_wandb:
         run.finish()
