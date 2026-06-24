@@ -21,35 +21,11 @@ The current codebase focuses on MyoLeg tasks such as:
 
 ## Concept Overview
 
-```mermaid
-flowchart LR
-    A[Musculoskeletal agent<br/>80 muscles + body dynamics] --> B[Collect muscle-motion statistics]
-    B --> C[Build synergy basis<br/>grouped muscles / PCA modes]
-    C --> D[Compact latent design space]
-    D --> E[RL co-optimization]
-    E --> F[Control policy]
-    E --> G[Evolved muscle properties]
-    F --> H[Terrain locomotion]
-    G --> H
-    H --> I[Biomechanical validation]
-```
+![Motivation Figure](fig1_motivation.jpg)
 
 ## SDE Framework
 
-```mermaid
-flowchart TD
-    A[Observation] --> B[PPO policy]
-    B --> C[Action split]
-    C --> D[Control action]
-    C --> E[Latent design action]
-    E --> F[Synergy basis mapping]
-    F --> G[Sigma / Nu / Kappa updates]
-    G --> H[Muscle strength / velocity / stiffness]
-    D --> I[MyoSuite simulation]
-    H --> I
-    I --> J[Reward + next observation]
-    J --> B
-```
+![SDE Framework Figure](fig2_framework.png)
 
 ## Repository Layout
 
