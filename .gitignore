@@ -160,6 +160,7 @@ events.out.tfevents.*
 
 # Public-release exclusions
 paper/
+docs/
 PROJECT_CONTEXT.md
 REVIEWER_COMMENTS.md
 TASKS.md
