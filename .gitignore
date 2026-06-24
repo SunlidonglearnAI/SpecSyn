@@ -163,6 +163,9 @@ paper/
 PROJECT_CONTEXT.md
 REVIEWER_COMMENTS.md
 TASKS.md
+README copy.md
+biomech_validate_success.py
+myosuite_init.py
 
 # Training / evaluation artifacts
 myosuite/agents/outputs/
